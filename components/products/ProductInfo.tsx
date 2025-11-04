@@ -2,7 +2,6 @@
 import React from 'react'
 import useResponsive from '@/hooks/useResponsive';
 import { useRouter } from 'next/navigation';
-import headphone from '../../public/assets/home/desktop/headphone.png'
 import Image from 'next/image';
 import ProductButton from '../ProductButton';
 import { useState } from 'react';

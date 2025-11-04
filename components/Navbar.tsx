@@ -3,7 +3,6 @@ import Link from 'next/link';
 import React from 'react'
 import Image from 'next/image';
 import useResponsive from '@/hooks/useResponsive';
-import ProductButton from './ProductButton';
 import logo from '../public/assets/logo.svg' ;
 import hamburger from '../public/assets/hamburger.svg' ;
 import { useState } from 'react';

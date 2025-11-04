@@ -1,7 +1,7 @@
 "use client";
 import React from 'react'
 import Image from 'next/image';
-import headphone from '../../public/assets/home/desktop/headphone.png'
+
 import useResponsive from '@/hooks/useResponsive';
 import ProductButton from '../ProductButton';
 

@@ -1,7 +1,6 @@
 "use client";
 import React from 'react'
 import Image from 'next/image';
-import man from '../../public/assets/man.png'
 import useResponsive from '@/hooks/useResponsive';
 interface ProductGallery {
   first: {
