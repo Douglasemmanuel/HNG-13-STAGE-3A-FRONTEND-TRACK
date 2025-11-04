@@ -2,7 +2,7 @@
 
 import React from 'react'
 import Image from 'next/image';
-import man from '../assets/man.png' ;
+import man from '../public/assets/man.png' ;
 import useResponsive from '@/hooks/useResponsive';
 const Advertisement:React.FC = () => {
      const { isMobile, isTablet, isDesktop } = useResponsive();
@@ -36,7 +36,7 @@ const Advertisement:React.FC = () => {
   style={{
     display: 'flex',
     flexDirection:  'row' ,
-    padding: '3rem 8rem',
+    padding: '3rem 13rem',
     alignItems:  'center', 
     justifyContent:'space-between' ,
   }}

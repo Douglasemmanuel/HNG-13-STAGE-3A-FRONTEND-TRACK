@@ -2,10 +2,10 @@
 
 
 import React from 'react'
-import Logo from '../assets/logo.svg' ;
-import facebook from '../assets/shared/desktop/icon-facebook.svg' ;
-import instagram from '../assets/shared/desktop/icon-instagram.svg' ;
-import twitter from '../assets/shared/desktop/icon-twitter.svg' ;
+import Logo from '../public/assets/logo.svg' ;
+import facebook from '../public/assets/shared/desktop/icon-facebook.svg' ;
+import instagram from '../public/assets/shared/desktop/icon-instagram.svg' ;
+import twitter from '../public/assets/shared/desktop/icon-twitter.svg' ;
 import Image from 'next/image';
 import useResponsive from '@/hooks/useResponsive';
 const Footer:React.FC = () => {
@@ -13,7 +13,7 @@ const Footer:React.FC = () => {
   return (
    <div
    style={{
-     paddingTop: isMobile ? "6rem" : isTablet ? "4rem" : "5rem",
+     paddingTop: isMobile ? "12rem" : isTablet ? "6rem" : "5rem",
 
    }}
    >
@@ -27,10 +27,10 @@ const Footer:React.FC = () => {
                 rotate-0                  
                 "
 >
-    <div style={{padding:isDesktop ? '5rem' : isTablet ? '3rem' :'2rem'}}>
+    <div style={{padding:isDesktop ? '2rem 13rem' : isTablet ? '3rem' :'2rem'}}>
         <div style={{display:'flex' ,  flexDirection: isDesktop ? 'row' : 'column',justifyContent:'space-between' , flexWrap:'wrap'}}>
       <Image src={Logo} alt="My SVG" width={143} height={25} />
-      <div style={{ display:'flex', flexDirection:"row", gap:isDesktop ? '3rem' : '0.8rem', flexShrink: 0 , paddingTop:isDesktop? '0rem' : '1rem' }}>
+      <div style={{ display:'flex', flexDirection:"row", gap:isDesktop ? '3rem' : '0.4rem', flexShrink: 0 , paddingTop:isDesktop? '0rem' : '1rem' }}>
     {['HOME','HEADPHONES','SPEAKERS','EARPHONES'].map((item) => (
       <p
         key={item}

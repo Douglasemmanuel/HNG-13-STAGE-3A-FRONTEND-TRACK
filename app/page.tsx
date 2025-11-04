@@ -1,9 +1,15 @@
-import Image from "next/image";
-import HomeScreen from "./home/pages";
+
+import HomeScreen from "./intro/pages";
+import HeadphonesScreen from "./headphones/pages";
+import SpeakerScreen from "./speakers/pages";
+import EarPhoneScreen from "./earphones/pages";
 export default function Home() {
   return (
     <>
-    <HomeScreen/>
+    {/* <HomeScreen/> */}
+    <HeadphonesScreen/>
+    {/* <SpeakerScreen/> */}
+    {/* <EarPhoneScreen/> */}
     </>
   );
 }

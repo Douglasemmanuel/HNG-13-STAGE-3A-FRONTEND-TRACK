@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Manrope, Roboto } from 'next/font/google';
-
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 const manrope = Manrope({ subsets: ['latin'], variable: '--font-manrope' });
 const roboto = Roboto({ subsets: ['latin'], variable: '--font-roboto' });
 const geistSans = Geist({
@@ -27,11 +28,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+     
       <body
+      
         className={`${manrope.variable} ${roboto.variable} antialiased`}
       >
+         <Navbar/>
         {children}
+         <Footer/>
       </body>
+     
     </html>
   );
 }
