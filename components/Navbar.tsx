@@ -264,7 +264,7 @@ const Navbar:React.FC = () => {
   </div>
 )}
 <CartModal isOpen={isCartOpen} onClose={handleCloseCart}>
-  {cart.length < 0 ? (
+  {cart.length === 0 ? (
      <div style={{display:'flex' , flexDirection:'column' , justifyContent:'space-between' , alignItems:"center"}}>
     <p style={{textAlign:"center"}}>No Items Available</p>
     </div>
