@@ -25,12 +25,15 @@ const CheckoutScreen:React.FC = () => {
     >
     Go Back
     </p>
-      <div style={{display:"flex" , 
+      <div style={{
+        display:"flex" , 
       flexDirection:"row" ,
        flexWrap:"wrap" , 
       justifyContent:"space-between" ,
-       alignItems:'center',
-         marginTop:"2rem" 
+      alignItems: "flex-start",
+        alignContent:"center",
+         marginTop:"2rem" ,
+         gap:isDesktop ? '0rem' : '1rem',
          }}>
         <CheckOutForm/>
         <ProductSummary/>
