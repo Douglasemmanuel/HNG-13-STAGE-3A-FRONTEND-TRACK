@@ -7,12 +7,27 @@ import logo from '../public/assets/logo.svg' ;
 import hamburger from '../public/assets/hamburger.svg' ;
 import { useState } from 'react';
 import carts from '../public/assets/carts.svg' ;
+import { useRouter } from 'next/navigation';
+import CartModal from './cartModal';
+import { useCartStore } from '@/store/cart_store';
+import ProductButton from './ProductButton';
 const Navbar:React.FC = () => {
+  const router = useRouter();
   const [isVisible, setIsVisible] = useState(false);
-
+   const [isCartOpen, setIsCartOpen] = useState(false);
+     const handleOpenCart = () => setIsCartOpen(true);
+  const handleCloseCart = () => setIsCartOpen(false);
+   const [quantity, setQuantity] = useState(1);
+   const { cart, increaseQuantity, decreaseQuantity, removeFromCart } = useCartStore();
+   const clearCart = useCartStore((state) => state.clearCart);
+  
   const toggleMenu = () => {
     setIsVisible(!isVisible);
   };
+  const handleCheckout = () => {
+  handleCloseCart()      
+  router.push('/checkout'); 
+};
       const { isMobile, isTablet, isDesktop } = useResponsive();
       const paddingValue = isDesktop ? '13rem' : isTablet ? '5rem' : '2rem';
   return (
@@ -32,8 +47,8 @@ const Navbar:React.FC = () => {
         <Image
           src={hamburger}
           alt="Menu"
-          layout="fill"
-          objectFit="contain"
+          fill
+           style={{ objectFit: 'contain' }}
         />
       </div>
     )}
@@ -47,8 +62,8 @@ const Navbar:React.FC = () => {
     <Image
       src={logo}
       alt="Logo"
-      layout="fill"
-      objectFit="contain"
+      fill
+     style={{ objectFit: 'contain' }}
     />
   </div>
 </div>
@@ -69,11 +84,13 @@ const Navbar:React.FC = () => {
         cursor: 'pointer',
         color: 'white',
       }}
+       onClick={()=> router.push('/')}
     >
+      
       HOME
     </p>
   </Link>
-
+   
   <Link href="/headphones" passHref>
     <p
       style={{
@@ -92,6 +109,7 @@ const Navbar:React.FC = () => {
       HEADPHONES
     </p>
   </Link>
+   
 
   <Link href="/speakers" passHref>
     <p
@@ -139,13 +157,15 @@ const Navbar:React.FC = () => {
           width: '23px',
           height: '20px',
           position: 'relative',
+          cursor:'pointer' ,
         }}
+        onClick={() => setIsCartOpen(true)}
       >
         <Image
           src={carts}
           alt="carts"
-          layout="fill"
-          objectFit="contain"
+          fill
+           style={{ objectFit: 'contain' }}
         />
       </div>
        </div>
@@ -243,6 +263,207 @@ const Navbar:React.FC = () => {
     </Link>
   </div>
 )}
+<CartModal isOpen={isCartOpen} onClose={handleCloseCart}>
+  {cart.length < 0 ? (
+     <div style={{display:'flex' , flexDirection:'column' , justifyContent:'space-between' , alignItems:"center"}}>
+    <p>No Items Available</p>
+    </div>
+  ):(
+      <div>
+          <div style={{display:'flex' , flexDirection:'row' , justifyContent:'space-between' , alignItems:"center"}}>
+           <p
+      style={{
+        fontFamily: 'Manrope, sans-serif',
+        fontWeight: 700,
+        fontSize: '18px',
+        lineHeight: '100%',
+        letterSpacing: '1.29px',
+        textTransform: 'uppercase',
+      }}
+    >
+      CART ({cart.length})
+    </p>
+          <p
+      style={{
+        fontFamily: 'Manrope, sans-serif',
+        fontWeight: 400,
+        fontSize: '15px',
+        lineHeight: '25px',
+        letterSpacing: '0px',
+        textDecoration: 'underlined',
+        textDecorationStyle: 'solid',
+        textDecorationThickness: '0%',
+        cursor:'pointer'
+      }}
+       onClick={clearCart}
+    >
+      Remove all
+    </p>
+  
+        </div>
+       
+      <div style={{display:'flow' , flexDirection:'column' , margin:'1rem 0rem'}}>
+       {cart.map((item) => (
+        <div
+          key={item.id}
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          {/* Left: Image and Info */}
+          <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '1rem' }}>
+            {/* Image */}
+            <div
+              style={{
+                width: '64px',
+                height: '64px',
+                transform: 'rotate(0deg)',
+                background: '#F1F1F1',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <div style={{ position: 'relative', width: '40px', height: '38.5px' }}>
+                <Image
+                  src={item?.image.replace('./assets', '/assets')} 
+                  alt={`${item.name}-image`}
+                  fill
+                  style={{ objectFit: 'contain' }}
+                />
+              </div>
+            </div>
+
+            {/* Name & Price */}
+            <div>
+              <p
+                style={{
+                  fontFamily: 'Manrope, sans-serif',
+                  fontWeight: 700,
+                  fontSize: '15px',
+                  lineHeight: '25px',
+                  letterSpacing: '0px',
+                }}
+              >
+                {item.name}
+              </p>
+              <p
+                style={{
+                  fontFamily: 'Manrope, sans-serif',
+                  fontWeight: 700,
+                  fontSize: '14px',
+                  lineHeight: '25px',
+                  letterSpacing: '0px',
+                  paddingTop:'0.3rem',
+                }}
+              >
+                ${item.price}
+              </p>
+            </div>
+          </div>
+
+          {/* Quantity Selector */}
+          <div
+            style={{
+              width: '120px',
+              height: '48px',
+              background: '#F1F1F1',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              borderRadius: '8px',
+              padding: '0 12px',
+              boxSizing: 'border-box',
+            }}
+          >
+            <button
+              onClick={() => decreaseQuantity(item.id)}
+              style={{
+                border: 'none',
+                background: 'transparent',
+                fontSize: '18px',
+                cursor: 'pointer',
+              }}
+            >
+              -
+            </button>
+            <span
+              style={{
+                fontFamily: 'Manrope, sans-serif',
+                fontWeight: 700,
+                fontSize: '16px',
+                textAlign: 'center',
+                width: '24px',
+              }}
+            >
+              {item.quantity}
+            </span>
+            <button
+              onClick={() => increaseQuantity(item.id)}
+              style={{
+                border: 'none',
+                background: 'transparent',
+                fontSize: '18px',
+                cursor: 'pointer',
+              }}
+            >
+              +
+            </button>
+          </div>
+        </div>
+      ))}
+
+    </div>
+
+    {(() => {
+        const total = cart.reduce((sum, item) => {
+          // adjust these property names to match your item object
+          return sum + (item.price * item.quantity);
+        }, 0);
+        return (
+          <div style={{ display:'flex', flexDirection:"row", justifyContent:'space-between'  , alignItems:"center"  , paddingTop:'1rem'}}>
+            <p style={{
+              fontFamily: 'Manrope, sans-serif',
+              fontWeight: 400,
+              fontSize: '15px',
+              lineHeight: '25px',
+              letterSpacing: '0px',
+              textDecoration: 'none',
+            }}>
+              TOTAL
+            </p>
+            <p style={{
+              fontFamily: 'Manrope, sans-serif',
+              fontWeight: 700,
+              fontSize: '18px',
+              lineHeight: '100%',
+              letterSpacing: '1.29px',
+              textTransform: 'uppercase',
+            }}>
+              ${total.toLocaleString()}
+            </p>
+          </div>
+        );
+      })()}
+         <ProductButton
+      text="CHECKOUT"
+      bgColor="#D87D4A"
+      textColor="white"
+      hoverBgColor="#FBAF85"
+      hoverTextColor="white"
+      width= '325px'
+      height='48px'
+      onClick={handleCheckout}
+     
+    />
+      </div>
+  )}
+    
+      </CartModal>
+
  <div style={{ border: '1px solid white', width: '100%', marginTop: '2rem' , opacity:'10.4%' }}></div>
         </div>
 

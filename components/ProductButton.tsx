@@ -15,6 +15,7 @@ interface ProductButtonProps {
   hoverTextColor?: string;
   fontSize?: string;
   marginTop?: string;
+  onClick?: () => void; // Optional onClick prop
 }
 
 const ProductButton: React.FC<ProductButtonProps> = ({
@@ -29,6 +30,7 @@ const ProductButton: React.FC<ProductButtonProps> = ({
   hoverTextColor = 'white',
   fontSize = '13px',
   marginTop = '2rem',
+  onClick, // destructure it here
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const { isMobile, isTablet, isDesktop } = useResponsive();
@@ -37,6 +39,7 @@ const ProductButton: React.FC<ProductButtonProps> = ({
     <div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onClick={onClick} // optional click
       style={{
         width,
         height,
@@ -47,7 +50,7 @@ const ProductButton: React.FC<ProductButtonProps> = ({
         color: isHovered ? hoverTextColor : textColor,
         border: borderColor ? `${borderWidth} solid ${borderColor}` : 'none',
         textAlign: 'center',
-        cursor: 'pointer',
+        cursor: onClick ? 'pointer' : 'default', // only show pointer if clickable
         marginTop,
         transition: 'all 0.3s ease',
       }}

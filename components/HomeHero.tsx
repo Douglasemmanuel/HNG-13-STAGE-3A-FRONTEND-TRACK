@@ -73,13 +73,15 @@ const HomeHero:React.FC = () => {
   style={{
     height: '500px',
     width: '486px',
+    position:'relative'
   }}
 >
   <Image
     src={headPhone} 
     alt="headPhone"
+    fill
     // objectFit="contain"
-        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+        style={{ width: '100%', height: '100%', objectFit: 'contain' }}
   />
 </div>
 
@@ -94,7 +96,7 @@ const HomeHero:React.FC = () => {
         src={headPhone} 
         alt="headPhone"
         fill // modern Next.js prop instead of layout="fill"
-        style={{ objectFit: 'cover' }}
+        style={{ objectFit: 'cover'  , width:"100%" , height:'100%'}}
         priority
       />
 

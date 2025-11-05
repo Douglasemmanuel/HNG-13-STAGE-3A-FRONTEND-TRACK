@@ -19,9 +19,10 @@ const product = products.data.find((p) => p.id === numericId);
     <div>
 <ProductInfo
   image={product!.image!.desktop ?? null}
-  name={product?.name ?? 'No Name'}
+  name={product?.slug ?? 'No Name'}
   price={product?.price ?? 0}        
   description={product?.description ?? 'No description available'} 
+  productId={product?.id ?? 0 }
 />
 
       <InBox  features={product?.features}  includes={product?.includes}/>

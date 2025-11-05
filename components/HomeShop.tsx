@@ -94,7 +94,7 @@ const HomeShop:React.FC = () => {
                   src={arrow}
                   alt="Arrow"
                   layout="fill"
-                  objectFit="contain"
+                style={{objectFit:'contain'}}
                 />
               </div>
             </div>

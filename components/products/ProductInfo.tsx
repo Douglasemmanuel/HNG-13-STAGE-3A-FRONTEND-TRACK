@@ -5,21 +5,24 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import ProductButton from '../ProductButton';
 import { useState } from 'react';
+import { useCartStore } from '@/store/cart_store';
 interface ProductInfoProps {
  image: string;
   name: string;
   price: number;
   description: string;
+  productId:number | string;
   
 }
-const ProductInfo:React.FC<ProductInfoProps> = ({image ,name , price , description}) => {
+const ProductInfo:React.FC<ProductInfoProps> = ({image ,name , price , description , productId}) => {
+  const {addToCart} = useCartStore() ;
         const { isMobile, isTablet, isDesktop } = useResponsive();
       const paddingValue = isDesktop ? '13rem' : isTablet ? '5rem' : '2rem';
        const router = useRouter();
          const [quantity, setQuantity] = useState(1);
-
-  const increment = () => setQuantity((prev) => prev + 1);
-  const decrement = () => setQuantity((prev) => (prev > 0 ? prev - 1 : 0));
+          const id = String(productId);
+  // const increment = () => setQuantity((prev) => prev + 1);
+  // const decrement = () => setQuantity((prev) => (prev > 0 ? prev - 1 : 0));
   return (
     <div  style={{ padding: `4rem ${paddingValue}` }}>
         <p
@@ -118,7 +121,6 @@ const ProductInfo:React.FC<ProductInfoProps> = ({image ,name , price , descripti
             }}
           >
             {name}
-            <br /> Headphones
           </p>
 
           <p
@@ -170,10 +172,11 @@ const ProductInfo:React.FC<ProductInfoProps> = ({image ,name , price , descripti
       borderRadius: '8px',
       padding: '0 12px',
       boxSizing: 'border-box',
+      marginTop:'2rem'
     }}
   >
     <button
-      onClick={increment}
+     onClick={() => setQuantity((q) => q + 1)}
       style={{
         border: 'none',
         background: 'transparent',
@@ -197,7 +200,7 @@ const ProductInfo:React.FC<ProductInfoProps> = ({image ,name , price , descripti
     </span>
 
     <button
-      onClick={decrement}
+      onClick={() => setQuantity((q) => Math.max(1, q - 1))}
       style={{
         border: 'none',
         background: 'transparent',
@@ -218,6 +221,7 @@ const ProductInfo:React.FC<ProductInfoProps> = ({image ,name , price , descripti
       hoverTextColor="white"
        width= '120px'
       height='48px'
+      onClick={() => addToCart({ id, name, price , image }, quantity)}
     />
   </div>
 </div>

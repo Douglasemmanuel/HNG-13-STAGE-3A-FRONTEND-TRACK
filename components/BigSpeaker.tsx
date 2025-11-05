@@ -25,7 +25,7 @@ const BigSpeaker:React.FC = () => {
     <Image
       src={pattern}
       alt="SVG Image"
-      layout="fill"
+      fill
        style={{ width: '100%', height: '100%', objectFit: 'cover'   }}
     />
 
@@ -70,7 +70,7 @@ const BigSpeaker:React.FC = () => {
       <Image
         src={speaker}
         alt="Positioned Image"
-        layout="fill"               
+        fill            
         objectFit="cover"             
       />
     </div>

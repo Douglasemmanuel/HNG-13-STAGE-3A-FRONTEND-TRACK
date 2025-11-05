@@ -1,5 +1,5 @@
+"use client";
 import React from 'react'
-import Footer from '@/components/Footer'
 import Advertisement from '@/components/Advertisement'
 import Earphonessegment from '@/components/Earphonessegment'
 import HomeSpeaker from '@/components/HomeSpeaker';

@@ -1,4 +1,4 @@
-
+"use client";
 import React from 'react'
 import Advertisement from '@/components/Advertisement';
 import HomeShop from '@/components/HomeShop';

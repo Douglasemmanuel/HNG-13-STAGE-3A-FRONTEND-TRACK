@@ -4,7 +4,7 @@ import EarphoneHero from '@/components/EarphoneHero';
 import Advertisement from '@/components/Advertisement';
 import HomeShop from '@/components/HomeShop';
 import EarphoneProduct from '@/components/EarphoneProduct';
-const EarPhoneScreen = () => {
+const Pages:React.FC = () => {
   return (
     <div>
         <EarphoneHero/>
@@ -15,4 +15,4 @@ const EarPhoneScreen = () => {
   )
 }
 
-export default EarPhoneScreen;
+export default Pages;

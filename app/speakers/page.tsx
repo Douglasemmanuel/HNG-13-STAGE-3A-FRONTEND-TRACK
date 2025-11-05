@@ -4,7 +4,7 @@ import SpeakerHero from '@/components/SpeakerHero'
 import Advertisement from '@/components/Advertisement';
 import SpeakerProduct from '@/components/SpeakerProduct';
 import HomeShop from '@/components/HomeShop';
-const SpeakerScreen:React.FC = () => {
+const Page:React.FC = () => {
   return (
     <div>
         <SpeakerHero/>
@@ -15,4 +15,4 @@ const SpeakerScreen:React.FC = () => {
   )
 }
 
-export default SpeakerScreen;
+export default Page;

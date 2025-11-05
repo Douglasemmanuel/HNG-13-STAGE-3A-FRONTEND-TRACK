@@ -1,15 +1,19 @@
 
-import HomeScreen from "./intro/pages";
-// import HeadphonesScreen from "./headphones/pages";
-// import SpeakerScreen from "./speakers/pages";
-// import EarPhoneScreen from "./earphones/pages";
+import BigSpeaker from "@/components/BigSpeaker";
+import HomeHero from "@/components/HomeHero";
+import HomeShop from "@/components/HomeShop";
+import HomeSpeaker from "@/components/HomeSpeaker";
+import Earphonessegment from "@/components/Earphonessegment";
+import Advertisement from "@/components/Advertisement";
 export default function Home() {
   return (
     <>
-    <HomeScreen/>
-    {/* <HeadphonesScreen/> */}
-    {/* <SpeakerScreen/> */}
-    {/* <EarPhoneScreen/> */}
+     <HomeHero/>
+      <HomeShop/>
+      <BigSpeaker/>
+      <HomeSpeaker/>
+      <Earphonessegment/>
+      <Advertisement/>
     </>
   );
 }

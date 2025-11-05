@@ -1,4 +1,4 @@
-"use client";
+// "use client";
 import React from 'react'
 import useResponsive from '@/hooks/useResponsive';
 const HeadphoneHero:React.FC = () => {
@@ -16,7 +16,7 @@ const HeadphoneHero:React.FC = () => {
       <div
         style={{
           width: '100%',
-          height: isTablet ? '600px' : '336px',
+          height: '150px',
           display: 'flex',             
           alignItems: 'center',        
           justifyContent: 'center',    
