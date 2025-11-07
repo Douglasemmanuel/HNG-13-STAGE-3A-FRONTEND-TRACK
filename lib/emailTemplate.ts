@@ -1,4 +1,3 @@
-// lib/emailTemplate.ts
 
 export interface CartItem {
   name: string;
@@ -7,54 +6,73 @@ export interface CartItem {
   price: number; // price per unit
 }
 
-export interface OrderSummary {
+export interface CartState {
+  cart: CartItem[];
   subtotal: number;
-  tax: number;
-  total: number;
+  vat: number;
+  shipping: number;
+  grandTotal: number;
 }
 
-export function getEmailTemplate(
-  to: string,
-  items: CartItem[],
-  summary: OrderSummary
-) {
-  // Generate HTML rows for each item
-  const itemsHtml = items
+
+
+
+export function getEmailTemplate(to: string, cartState: CartState) {
+  const { cart, subtotal, vat, shipping, grandTotal } = cartState;
+
+  // Generate HTML rows for each cart item
+  const itemsHtml = cart
     .map(
       (item) => `
-    <tr>
-      <td style="padding: 10px; border-bottom: 1px solid #eee;">
-        <img src="${item.image}" alt="${item.name}" width="50" style="vertical-align: middle; margin-right: 10px;">
-        ${item.name} (x${item.quantity})
-      </td>
-      <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">
-        $${(item.price * item.quantity).toFixed(2)}
-      </td>
-    </tr>
-  `
+      <tr>
+        <td style="width: 70%; padding: 10px; border-bottom: 1px solid #eee; display: flex; align-items: center;">
+          <img src="${item.image}" alt="${item.name}" width="50" style="margin-right: 10px;">
+          <span style="font-size: 14px; color: #333;">${item.name} (x${item.quantity})</span>
+        </td>
+        <td style="width: 30%; padding: 10px; border-bottom: 1px solid #eee; text-align: right; font-size: 14px; color: #333;">
+          $${(item.price * item.quantity).toFixed(2)}
+        </td>
+      </tr>
+    `
     )
     .join("");
 
   return `
     <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; padding: 20px;">
-      <h2 style="color: #1a73e8;">Thank you for your purchase, ${to}!</h2>
-      <p>Your order has been successfully processed. Here’s a summary of your purchase:</p>
+      <h2 style="color: #1a73e8; margin-bottom: 10px;">Thank you for your purchase, ${to}!</h2>
+      <p style="margin-bottom: 20px;">Your order has been successfully processed. Here’s a summary of your purchase:</p>
 
       <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; margin-top: 20px;">
-        ${itemsHtml}
-        <tr>
-          <td style="padding: 10px; text-align: right; font-weight: bold;">Subtotal:</td>
-          <td style="padding: 10px; text-align: right;">$${summary.subtotal.toFixed(2)}</td>
-        </tr>
-        <tr>
-          <td style="padding: 10px; text-align: right; font-weight: bold;">Tax:</td>
-          <td style="padding: 10px; text-align: right;">$${summary.tax.toFixed(2)}</td>
-        </tr>
-        <tr>
-          <td style="padding: 10px; text-align: right; font-weight: bold; font-size: 16px;">Total:</td>
-          <td style="padding: 10px; text-align: right; font-weight: bold; font-size: 16px;">$${summary.total.toFixed(2)}</td>
-        </tr>
+        <thead>
+          <tr>
+            <th style="width: 70%; text-align: left; padding: 10px; border-bottom: 2px solid #1a73e8; font-size: 14px; color: #333;">Product</th>
+            <th style="width: 30%; text-align: right; padding: 10px; border-bottom: 2px solid #1a73e8; font-size: 14px; color: #333;">Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${itemsHtml}
+          <tr>
+            <td style="width: 70%; padding: 10px; text-align: right; font-weight: bold; color: #000;">Subtotal:</td>
+            <td style="width: 30%; padding: 10px; text-align: right; color: #000;">$${subtotal.toFixed(2)}</td>
+          </tr>
+          <tr>
+            <td style="width: 70%; padding: 10px; text-align: right; font-weight: bold; color: #000;">VAT:</td>
+            <td style="width: 30%; padding: 10px; text-align: right; color: #000;">$${vat.toFixed(2)}</td>
+          </tr>
+          <tr>
+            <td style="width: 70%; padding: 10px; text-align: right; font-weight: bold; color: #000;">Shipping:</td>
+            <td style="width: 30%; padding: 10px; text-align: right; color: #000;">$${shipping.toFixed(2)}</td>
+          </tr>
+          <tr>
+            <td style="width: 70%; padding: 10px; text-align: right; font-weight: bold; font-size: 16px; color: #000;">Grand Total:</td>
+            <td style="width: 30%; padding: 10px; text-align: right; font-weight: bold; font-size: 16px; color: #000;">$${grandTotal.toFixed(2)}</td>
+          </tr>
+        </tbody>
       </table>
+
+      <p style="margin-top: 20px; font-size: 14px; color: #333;">
+        We appreciate your business! If you have any questions about your order, feel free to contact us.
+      </p>
 
       <hr style="border:none; border-top:1px solid #eee; margin:20px 0;">
       <p style="font-size: 12px; color: #999;">

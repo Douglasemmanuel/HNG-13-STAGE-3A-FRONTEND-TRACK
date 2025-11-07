@@ -1,6 +1,9 @@
 import nodemailer from "nodemailer";
 import { NextRequest, NextResponse } from "next/server";
 import { getEmailTemplate } from "@/lib/emailTemplate";
+import { useCartStore } from "@/store/cart_store";
+
+const { cart, subtotal, vat, shipping, grandTotal } = useCartStore.getState();
 export async function POST(req: NextRequest) {
   try {
     const { to, subject, text } = await req.json();
@@ -11,7 +14,15 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
- const htmlContent = getEmailTemplate(text , subject , to);
+const htmlContent = getEmailTemplate(to, {
+  cart,
+  subtotal,
+  vat,
+  shipping,
+  grandTotal
+});
+
+
 
     const transporter = nodemailer.createTransport({
       service: "Gmail",

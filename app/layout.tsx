@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; 
+import { ClientLayout } from "./ClientLayout";
 const manrope = Manrope({ subsets: ['latin'], variable: '--font-manrope' });
 const roboto = Roboto({ subsets: ['latin'], variable: '--font-roboto' });
 const geistSans = Geist({
@@ -36,7 +37,7 @@ export default function RootLayout({
         className={`${manrope.variable} ${roboto.variable} antialiased`}
       >
          <Navbar/>
-        {children}
+          <ClientLayout>{children}</ClientLayout>
          <Footer/>
          <ToastContainer
           position="top-right"
