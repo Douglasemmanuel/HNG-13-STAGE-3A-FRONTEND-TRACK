@@ -165,6 +165,15 @@ const CheckOutForm: React.FC<CheckOutFormProps> = ({
     if (isTablet) return tabletWidth ?? desktopWidth * 0.9;
     return desktopWidth; // default for desktop
   };
+//   const getResponsiveHeight = (
+//   desktopHeight: number,
+//   tabletHeight?: number,
+//   mobileHeight?: number
+// ) => {
+//   if (isMobile) return mobileHeight ?? desktopHeight * 0.8;
+//   if (isTablet) return tabletHeight ?? desktopHeight * 0.9;
+//   return desktopHeight; // default for desktop
+// };
 
   // ✅ Handle change for billing & shipping fields
   const handleChange = (section: "billing" | "shipping", field: string, value: string) => {
@@ -250,7 +259,7 @@ const CheckOutForm: React.FC<CheckOutFormProps> = ({
     <div
       style={{
         width: "630px",
-        height: isDesktop ? "1126px" : isTablet ? "1160px" : "1378px",
+        height: isDesktop ? "1126px" : isTablet ? "1160px" : "1000px",
         borderRadius: "8px",
         backgroundColor: "#FFFFFF",
         padding: "2rem",
