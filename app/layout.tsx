@@ -4,6 +4,8 @@ import "./globals.css";
 import { Manrope, Roboto } from 'next/font/google';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; 
 const manrope = Manrope({ subsets: ['latin'], variable: '--font-manrope' });
 const roboto = Roboto({ subsets: ['latin'], variable: '--font-roboto' });
 const geistSans = Geist({
@@ -36,6 +38,19 @@ export default function RootLayout({
          <Navbar/>
         {children}
          <Footer/>
+         <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="colored"
+        />
+
       </body>
      
     </html>

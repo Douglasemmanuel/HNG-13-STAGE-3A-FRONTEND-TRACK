@@ -29,7 +29,7 @@ const DesktopProduct: React.FC<ProductProps> = ({
   description,
   image,
   buttonText,
-  buttonLink = "/",
+  buttonLink,
   layout = "imageLeft",
 }) => {
   const { isMobile, isTablet, isDesktop } = useResponsive();
@@ -132,7 +132,7 @@ const DesktopProduct: React.FC<ProductProps> = ({
             {description}
           </p>
 
-          <Link href={buttonLink} passHref>
+          <Link href={buttonLink ?? "/"} passHref>
             <ProductButton
               text={buttonText}
               bgColor="#D87D4A"
