@@ -37,7 +37,7 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose, children }) => {
       z-10
     "
     style={{
-      right:isDesktop ? '10rem' : isTablet ? '5rem' : '2rem'
+      right:isDesktop ? '10rem' : isTablet ? '5rem' : '0.5rem'
     }}
   >
     {children}

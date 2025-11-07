@@ -5,6 +5,7 @@ import useResponsive from "@/hooks/useResponsive";
 import payLogo from '../public/pay.svg' ;
 
 import Image from "next/image";
+import { handleBuildComplete } from "next/dist/build/adapter/build-complete";
 interface LabeledInputProps {
   width?: number;
   height?: number;
@@ -259,7 +260,7 @@ const CheckOutForm: React.FC<CheckOutFormProps> = ({
     <div
       style={{
         width: "630px",
-        height: isDesktop ? "1126px" : isTablet ? "1160px" : "1000px",
+        height: isDesktop ? "1126px" : isTablet ? "1160px" : "1300px",
         borderRadius: "8px",
         backgroundColor: "#FFFFFF",
         padding: "2rem",
@@ -458,16 +459,16 @@ const PaymentDetails: React.FC<PaymentDetailsProps> = ({
     },
   ];
 
-  const handleRadioChange = (method: 'eMoney' | 'cod') => {
-    setPaymentMethod(method);
-    setCheckoutData((prev) => ({
-      ...prev,
-      payment: {
-        ...prev.payment,
-        method, // Update the actual payment method in checkoutData
-      },
-    }));
-  };
+ const handleRadioChange = (method: 'eMoney' | 'cod') => {
+  setCheckoutData(prev => ({
+    ...prev,
+    payment: {
+      ...prev.payment,
+      method
+    }
+  }));
+};
+
 
   return (
     <>
@@ -502,7 +503,7 @@ const PaymentDetails: React.FC<PaymentDetailsProps> = ({
       </div>
 
       <div style={{ display: "flex", gap: "1rem", marginTop: "1rem", flexDirection:'column' }}>
-      <RadioInput
+      {/* <RadioInput
   label="e-Money"
   name="paymentMethod"
   value="eMoney"
@@ -522,16 +523,53 @@ const PaymentDetails: React.FC<PaymentDetailsProps> = ({
     ...prev,
     payment: { ...prev.payment, method: "cod" }
   }))}
+/> */}
+<RadioInput
+  label="e-Money"
+  name="paymentMethod"
+  value="eMoney"
+  checked={checkoutData.payment.method === "eMoney"}
+  onChange={()=>handleRadioChange('eMoney')}
+  // onChange={() => setCheckoutData(prev => ({
+  //   ...prev,
+  //   payment: { ...prev.payment, method: "eMoney" }
+  // }))}
 />
+
+<RadioInput
+  label="Cash on Delivery"
+  name="paymentMethod"
+  value="cod"
+  checked={checkoutData.payment.method === "cod"}
+  onChange={()=>handleRadioChange('cod')}
+  // onChange={() => setCheckoutData(prev => ({
+  //   ...prev,
+  //   payment: { ...prev.payment, method: "cod" }
+  // }))}
+/>
+
 
       </div>
 
     </div>
     {checkoutData.payment.method === 'eMoney' && (
         <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem', flexDirection: isDesktop ? 'row' : 'column' }}>
-          {paymentInputs.map((input) => (
-            <PaymentInput key={input.name} {...input} />
-          ))}
+         <PaymentInput
+      label="e-Money Number"
+      value={checkoutData.payment.eMoneyNumber}
+      onChange={(val) => setCheckoutData(prev => ({
+        ...prev,
+        payment: { ...prev.payment, eMoneyNumber: val }
+      }))}
+    />
+    <PaymentInput
+      label="e-Money PIN"
+      value={checkoutData.payment.eMoneyPin}
+      onChange={(val) => setCheckoutData(prev => ({
+        ...prev,
+        payment: { ...prev.payment, eMoneyPin: val }
+      }))}
+    />
         </div>
       )}
     </>
@@ -579,7 +617,7 @@ const PaymentInput: React.FC<PaymentInputProps> = ({
       type="text"
       placeholder={placeholder}
       {...(register && name ? register(name, { required: `${label} is required` }) : {})}
-      defaultValue={value || ""} // <-- change value to defaultValue
+      defaultValue={value || ""}
       onChange={(e) => onChange && onChange(e.target.value)}
       style={{
         width: `${width}px`,

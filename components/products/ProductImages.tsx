@@ -34,7 +34,7 @@ const ProductImages:React.FC<ProductImagesProps>= ({gallery}) => {
             <div style={{display:'flex' , flexDirection:"column" , gap:'2rem'}}>
                 <div
       style={{
-        width: '445px',
+        width: isDesktop  ? '445px' :isTablet? '100%':'100%',
         height: '280px',
         opacity: 1,
         transform: 'rotate(0deg)',
@@ -50,7 +50,7 @@ const ProductImages:React.FC<ProductImagesProps>= ({gallery}) => {
     </div>
          <div
       style={{
-        width: '445px',
+         width: isDesktop  ? '445px' :isTablet? '100%':'100%',
         height: '280px',
         opacity: 1,
         transform: 'rotate(0deg)',
@@ -69,7 +69,7 @@ const ProductImages:React.FC<ProductImagesProps>= ({gallery}) => {
       style={{
         top: '1455px',
         left: '640px',
-        width: '635px',
+        width:  isDesktop ? '635px':isTablet? '100%':'100%',
         height: '592px',
         opacity: 1,
         transform: 'rotate(0deg)',

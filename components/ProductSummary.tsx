@@ -13,7 +13,7 @@ interface ProductSummaryProps {
 }
 const ProductSummary:React.FC<ProductSummaryProps> = ({ onPayClick }) => {
    const router = useRouter();
-   const { cart, increaseQuantity, decreaseQuantity, removeFromCart } = useCartStore();
+   const { cart, increaseQuantity, decreaseQuantity, removeFromCart , subtotal , grandTotal , shipping , vat } = useCartStore();
   const { isMobile, isTablet, isDesktop } = useResponsive();
    const [open, setOpen] = useState(false)
       const handleOpenModal = () => setOpen(true);
@@ -29,13 +29,7 @@ const handleContinuePay = () => {
       handleOpenModal(); // Fallback (in case no function passed)
     }
   };
-   const total = cart.reduce((sum, item) => {
-          // adjust these property names to match your item object
-          return sum + (item.price * item.quantity);
-        }, 0);
-        const shipping = 50;
-  const vat = 50;
-  const grandTotal = total + shipping + vat;
+ 
   return (
     <div
   style={{
@@ -162,7 +156,7 @@ const handleContinuePay = () => {
               letterSpacing: '1.29px',
               textTransform: 'uppercase',
             }}>
-              ${total.toLocaleString()}
+              ${subtotal}
             </p>
           </div>
         );
@@ -208,7 +202,7 @@ const handleContinuePay = () => {
               letterSpacing: '1.29px',
               textTransform: 'uppercase',
             }}>
-              $ 50
+              $ {vat}
             </p>
           </div>
              <div style={{ display:'flex', flexDirection:"row", justifyContent:'space-between'  , alignItems:"center"  , paddingTop:'1rem'}}>

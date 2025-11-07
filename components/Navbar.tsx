@@ -18,7 +18,7 @@ const Navbar:React.FC = () => {
      const handleOpenCart = () => setIsCartOpen(true);
   const handleCloseCart = () => setIsCartOpen(false);
    const [quantity, setQuantity] = useState(1);
-   const { cart, increaseQuantity, decreaseQuantity, removeFromCart } = useCartStore();
+   const { cart, increaseQuantity, decreaseQuantity, removeFromCart  , subtotal , shipping , vat , grandTotal} = useCartStore();
    const clearCart = useCartStore((state) => state.clearCart);
   
   const toggleMenu = () => {
@@ -460,10 +460,10 @@ const Navbar:React.FC = () => {
     </div>
 
     {(() => {
-        const total = cart.reduce((sum, item) => {
-          // adjust these property names to match your item object
-          return sum + (item.price * item.quantity);
-        }, 0);
+        // const total = cart.reduce((sum, item) => {
+        //   // adjust these property names to match your item object
+        //   return sum + (item.price * item.quantity);
+        // }, 0);
         return (
           <div style={{ display:'flex', flexDirection:"row", justifyContent:'space-between'  , alignItems:"center"  , paddingTop:'1rem'}}>
             <p style={{
@@ -484,7 +484,7 @@ const Navbar:React.FC = () => {
               letterSpacing: '1.29px',
               textTransform: 'uppercase',
             }}>
-              ${total.toLocaleString()}
+              ${subtotal}
             </p>
           </div>
         );

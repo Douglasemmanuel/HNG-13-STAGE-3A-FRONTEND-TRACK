@@ -19,27 +19,61 @@ export const shippingSchema = z.object({
 });
 
 // Payment schema
- export const paymentSchema = z.object({
-  paymentMethod: z.enum(["eMoney", "cod"], {
-    message: "Payment method is required",
-  }),
+//  export const paymentSchema = z.object({
+//   paymentMethod: z.enum(["eMoney", "cod"], {
+//     message: "Payment method is required",
+//   }),
+//   eMoneyNumber: z.string().optional(),
+//   pinNumber: z.string().optional(),
+// }).superRefine((data, ctx) => {
+//   if (data.paymentMethod === "eMoney") {
+//     if (!data.eMoneyNumber?.trim()) {
+//       ctx.addIssue({
+//         path: ["eMoneyNumber"],
+//         message: "e-Money Number is required",
+//         code: "custom",
+//       });
+//     }
+
+//     if (!data.pinNumber?.trim()) {
+//       ctx.addIssue({
+//         path: ["pinNumber"],
+//         message: "PIN Number is required",
+//         code: "custom",
+//       });
+//     }
+//   }
+// });
+// export const paymentSchema = z.object({
+//   paymentMethod: z.enum(["eMoney", "cod"]),
+//   eMoneyNumber: z.string().optional(),
+//   pinNumber: z.string().optional(),
+// }).refine(
+//   (data) => data.paymentMethod !== "eMoney" || (data.eMoneyNumber && data.pinNumber),
+//   {
+//     message: "e-Money number and PIN are required when using e-Money",
+//     path: ["eMoneyNumber"], // optional, can attach to pin too
+//   }
+// );
+
+export const paymentSchema = z.object({
+  paymentMethod: z.enum(["eMoney", "cod"]),
   eMoneyNumber: z.string().optional(),
-  pinNumber: z.string().optional(),
+  eMoneyPin: z.string().optional(),
 }).superRefine((data, ctx) => {
   if (data.paymentMethod === "eMoney") {
-    if (!data.eMoneyNumber?.trim()) {
+    if (!data.eMoneyNumber) {
       ctx.addIssue({
         path: ["eMoneyNumber"],
-        message: "e-Money Number is required",
-        code: "custom",
+        message: "eMoney Number is required for eMoney payment",
+        code: "custom", // ✅ use string literal instead of ZodIssueCode.custom
       });
     }
-
-    if (!data.pinNumber?.trim()) {
+    if (!data.eMoneyPin) {
       ctx.addIssue({
-        path: ["pinNumber"],
-        message: "PIN Number is required",
-        code: "custom",
+        path: ["eMoneyPin"],
+        message: "eMoney PIN is required for eMoney payment",
+        code: "custom", // ✅ string literal
       });
     }
   }

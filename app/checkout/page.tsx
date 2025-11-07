@@ -104,43 +104,59 @@ const validateCheckout = (data: any) => {
     country: data.country || "",
   });
 
-  // Extract payment info
-  const paymentMethod = data.payment?.method || data.paymentMethod;;
-  const eMoneyNumber = data.payment?.eMoneyNumber || "";
-  const eMoneyPin = data.payment?.eMoneyPin || "";
+ // Extract payment info safely
+const paymentMethod = data.payment?.method || data.paymentMethod || "";
+const eMoneyNumber = data.payment?.eMoneyNumber || "";
+const eMoneyPin = data.payment?.eMoneyPin || "";
 
-  // Pre-check: payment method must be selected
-  if (!paymentMethod || (paymentMethod !== "eMoney" && paymentMethod !== "cod")) {
-     console.error("Payment method missing or invalid!");
-    toast.error("Please select a payment method (eMoney or COD)", {
-      position: "top-right",
-      autoClose: 2500,
-    });
-    return false;
-  }
+// Pre-check: payment method must be selected
+if (!paymentMethod || (paymentMethod !== "eMoney" && paymentMethod !== "cod")) {
+  console.log("Payment method missing or invalid!");
+  toast.error("Please select a payment method (eMoney or Cash)", {
+    position: "top-right",
+    autoClose: 2500,
+  });
+  return false;
+}
 
+// Validate payment using schema
+const paymentPayload =
+  paymentMethod === "eMoney"
+    ? { paymentMethod, eMoneyNumber, pinNumber: eMoneyPin }
+    : { paymentMethod };
 
+const paymentResult = paymentSchema.safeParse(paymentPayload);
 
+if (!paymentResult.success) {
+  const missingFields = paymentResult.error.issues
+    .map((err) => err.path.join('.') || err.message)
+    .join(', ');
+  toast.error(`Payment error: ${missingFields}`, {
+    position: "top-right",
+    autoClose: 2500,
+  });
+  return false;
+}
 
 
   // Validate payment
-  const paymentResult = paymentSchema.safeParse({
-    paymentMethod: paymentMethod,
-    eMoneyNumber: eMoneyNumber,
-    pinNumber: eMoneyPin,
-  });
+  // const paymentResult = paymentSchema.safeParse({
+  //   paymentMethod: paymentMethod,
+  //   eMoneyNumber: eMoneyNumber,
+  //   pinNumber: eMoneyPin,
+  // });
 
-  if (!paymentResult.success) {
-    const missingFields = paymentResult.error.issues
-      .map((err) => err.path.join('.') || err.message)
-      .join(', ');
+  // if (!paymentResult.success) {
+  //   const missingFields = paymentResult.error.issues
+  //     .map((err) => err.path.join('.') || err.message)
+  //     .join(', ');
 
-    toast.error(`Payment error: ${missingFields}`, {
-      position: "top-right",
-      autoClose: 2500,
-    });
-    return false;
-  }
+  //   toast.error(`Payment error: ${missingFields}`, {
+  //     position: "top-right",
+  //     autoClose: 2500,
+  //   });
+  //   return false;
+  // }
 
   // Validate billing/shipping errors
   if (!billingResult.success || !shippingResult.success) {
@@ -173,9 +189,6 @@ const mappedMethod = data.payment?.method;
   console.log("eMoney Number:", data.payment?.eMoneyNumber);
   console.log("eMoney Pin:", data.payment?.eMoneyPin);
 
-  // // Map payment method properly
-  // const mappedMethod = data.payment?.method; // "eMoney" or "cod"
-  // console.log('MAPP' , mappedMethod)
 
   // Update state
   setCheckoutData((prev) => ({
