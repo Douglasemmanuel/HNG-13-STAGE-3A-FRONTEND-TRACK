@@ -153,6 +153,47 @@ const Navbar:React.FC = () => {
 </>
 )}
 <div
+  style={{
+    width: '23px',
+    height: '20px',
+    position: 'relative',
+    cursor: 'pointer',
+  }}
+  onClick={() => setIsCartOpen(true)}
+>
+  {/* Cart Image */}
+  <Image
+    src={carts}
+    alt="carts"
+    fill
+    style={{ objectFit: 'contain' }}
+  />
+
+  {/* Only show badge if cart has items */}
+  {cart.length > 0 && (
+    <div
+      style={{
+        position: 'absolute',
+        top: '-8px',
+        right: '-8px',
+        backgroundColor: 'red',
+        color: 'white',
+        fontSize: '12px',
+        fontWeight: 'bold',
+        width: '16px',
+        height: '16px',
+        borderRadius: '50%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      {cart.length}
+    </div>
+  )}
+</div>
+
+{/* <div
         style={{
           width: '23px',
           height: '20px',
@@ -167,7 +208,7 @@ const Navbar:React.FC = () => {
           fill
            style={{ objectFit: 'contain' }}
         />
-      </div>
+      </div> */}
        </div>
   {isVisible && (
   <div
