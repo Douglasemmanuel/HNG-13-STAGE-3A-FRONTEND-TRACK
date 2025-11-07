@@ -20,7 +20,7 @@ export default defineSchema({
   }),
 
   orders: defineTable({
-    id: v.optional(v.string()), 
+    id: v.string(), 
     customer: v.object({
       name: v.string(),
       email: v.string(),
