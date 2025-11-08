@@ -25,26 +25,26 @@ const CheckoutScreen:React.FC = () => {
       const paddingValue = isDesktop ? '13rem' : isTablet ? '5rem' : '2rem';
      const createOrder = useMutation(api.mutations.createOrder) ;
       const [open, setOpen] = useState(false)
-      const cartRef = useRef<HTMLDivElement>(null);
+  //     const cartRef = useRef<HTMLDivElement>(null);
 
 
-  useEffect(() => {
-    if (!open) return; 
+  // useEffect(() => {
+  //   if (!open) return; 
 
-    const handleClickOutside = (event: MouseEvent) => {
-      if (cartRef.current && !cartRef.current.contains(event.target as Node)) {
-        setTimeout(() => clearCart(), 1000); // Clear cart after 1 second
-        setOpen(false); // Close cart
-        router.push("/"); // Redirect to home
-      }
-    };
+  //   const handleClickOutside = (event: MouseEvent) => {
+  //     if (cartRef.current && !cartRef.current.contains(event.target as Node)) {
+  //       setTimeout(() => clearCart(), 1000); // Clear cart after 1 second
+  //       setOpen(false); // Close cart
+  //       router.push("/"); // Redirect to home
+  //     }
+  //   };
 
-    document.addEventListener("mousedown", handleClickOutside);
+  //   document.addEventListener("mousedown", handleClickOutside);
 
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [open, clearCart, setOpen, router]);
+  //   return () => {
+  //     document.removeEventListener("mousedown", handleClickOutside);
+  //   };
+  // }, [open, clearCart, setOpen, router]);
 
   const handleOpenModal = () => setOpen(true);
   const handlePayed = () => {
@@ -187,7 +187,7 @@ console.log("Shipping validation:", shippingResult.success, shippingResult.error
 
   return true;
 };
-const sendOrderConfirmationEmail = async (email: string) => {
+const sendOrderConfirmationEmail = async (email: string, userName: string) => {
   try {
     const emailRes = await fetch("/api/send_email", {
       method: "POST",
@@ -195,12 +195,13 @@ const sendOrderConfirmationEmail = async (email: string) => {
       body: JSON.stringify({
         to: email,
         subject: "Order Confirmation ",
-        text: "Order Successful", 
+        text: `Order Successful - Thank you ${userName}`, 
         cart,
       subtotal,
       shipping,
       vat,
       grandTotal,
+      userName,
       }),
     });
     if (!emailRes.ok) {
@@ -287,7 +288,8 @@ const handlePaymentClick =  async() => {
     console.error("Failed to create order:", err);
     toast.error("Failed to create order. Please try again.");
   }
-   await sendOrderConfirmationEmail(data.email);
+  const userName = data.name; 
+   await sendOrderConfirmationEmail(data.email , userName);
    setOpen(true);
 
 };
@@ -329,7 +331,7 @@ const handlePaymentClick =  async() => {
         />
         <ProductSummary  onPayClick={handlePaymentClick} />
       </div>
-       <div ref={cartRef}>
+       {/* <div ref={cartRef}> */}
        <SuccessModal isOpen={open} onClose={handleCloseModal}>
     <div style={{padding:"0.4rem 1rem"}}>
        <div
@@ -556,7 +558,7 @@ $ 5,446
       
     </div>
  </SuccessModal>
- </div>
+ {/* </div> */}
       </div>
   )
 }

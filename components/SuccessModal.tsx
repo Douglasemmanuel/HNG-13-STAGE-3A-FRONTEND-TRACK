@@ -20,7 +20,7 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose, children }) => {
       {/* Dimmed background */}
       <div
         className="fixed inset-0 bg-black opacity-50"
-        onClick={onClose}
+        // onClick={onClose}
       />
 
       {/* Modal */}

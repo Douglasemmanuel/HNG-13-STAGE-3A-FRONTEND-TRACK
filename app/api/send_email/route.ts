@@ -6,7 +6,7 @@ import { useCartStore } from "@/store/cart_store";
 // const { cart, subtotal, vat, shipping, grandTotal } = useCartStore.getState();
 export async function POST(req: NextRequest) {
   try {
-    const { to, subject, text , subtotal , cart , shipping , vat , grandTotal } = await req.json();
+    const { to, subject, text , subtotal , cart , shipping , vat , grandTotal  , userName} = await req.json();
 
     if (!to || !subject || !text) {
       return NextResponse.json(
@@ -15,18 +15,10 @@ export async function POST(req: NextRequest) {
       );
     }
 const htmlContent = generateOrderEmailHtml(
-  {
-    customer: { name: to },
-    items: cart, 
-    totals: {
-      subtotal,
-      shipping,
-      tax: vat,
-      grandTotal: grandTotal,
-    },
-  },
-  to
-);
+   { items: cart, totals: { subtotal, shipping, tax: vat, grandTotal } },
+      to,
+      userName 
+    );
 
 
     const transporter = nodemailer.createTransport({
@@ -40,7 +32,7 @@ const htmlContent = generateOrderEmailHtml(
     const info = await transporter.sendMail({
       from: process.env.EMAIL_USER,
       to,
-      subject,
+      subject:"Order Confirmation",
       text,
       html:htmlContent ,
     });
