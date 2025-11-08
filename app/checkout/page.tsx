@@ -19,13 +19,10 @@ interface BillingData {
   name: string;
   email: string;
   phone: string;
-  address: string;
-  zip: string;
-  city: string;
-  country: string;
 }
 
 interface ShippingData {
+  address:string;
   zip: string;
   city: string;
   country: string;
@@ -48,12 +45,9 @@ interface CheckoutData {
       name: "",
       email: "",
       phone: "",
-      address: "",
-      zip: "",
-      city: "",
-      country: "",
     },
     shipping: {
+      address: "" ,
       zip: "",
       city: "",
       country: "",
@@ -87,78 +81,25 @@ interface CheckoutData {
 // ✅ Validation logic (updated)
 const validateCheckout = (data: any) => {
   // Ensure phone is a string
-  const phoneValue = String(data.phone || "");
+  // const phoneValue = String(data.phone || "");
 
   // Validate billing
   const billingResult = billingSchema.safeParse({
     name: data.name || "",
     email: data.email || "",
+    phone:data.phone || "",
    
   });
 
   // Validate shipping
   const shippingResult = shippingSchema.safeParse({
-    yourAddress: data.address || "",
-    zipCode: data.zip || "",
+    address: data.address || "",
+    zip: data.zip || "",
     city: data.city || "",
     country: data.country || "",
   });
 
- // Extract payment info safely
-const paymentMethod = data.payment?.method || data.paymentMethod || "";
-const eMoneyNumber = data.payment?.eMoneyNumber || "";
-const eMoneyPin = data.payment?.eMoneyPin || "";
-
-// Pre-check: payment method must be selected
-if (!paymentMethod || (paymentMethod !== "eMoney" && paymentMethod !== "cod")) {
-  console.log("Payment method missing or invalid!");
-  toast.error("Please select a payment method (eMoney or Cash)", {
-    position: "top-right",
-    autoClose: 2500,
-  });
-  return false;
-}
-
-// Validate payment using schema
-const paymentPayload =
-  paymentMethod === "eMoney"
-    ? { paymentMethod, eMoneyNumber, pinNumber: eMoneyPin }
-    : { paymentMethod };
-
-const paymentResult = paymentSchema.safeParse(paymentPayload);
-
-if (!paymentResult.success) {
-  const missingFields = paymentResult.error.issues
-    .map((err) => err.path.join('.') || err.message)
-    .join(', ');
-  toast.error(`Payment error: ${missingFields}`, {
-    position: "top-right",
-    autoClose: 2500,
-  });
-  return false;
-}
-
-
-  // Validate payment
-  // const paymentResult = paymentSchema.safeParse({
-  //   paymentMethod: paymentMethod,
-  //   eMoneyNumber: eMoneyNumber,
-  //   pinNumber: eMoneyPin,
-  // });
-
-  // if (!paymentResult.success) {
-  //   const missingFields = paymentResult.error.issues
-  //     .map((err) => err.path.join('.') || err.message)
-  //     .join(', ');
-
-  //   toast.error(`Payment error: ${missingFields}`, {
-  //     position: "top-right",
-  //     autoClose: 2500,
-  //   });
-  //   return false;
-  // }
-
-  // Validate billing/shipping errors
+   // Validate billing/shipping errors
   if (!billingResult.success || !shippingResult.success) {
     toast.error("Please fill in all required fields", {
       position: "top-right",
@@ -166,29 +107,67 @@ if (!paymentResult.success) {
     });
     return false;
   }
+  if (!billingResult.success) {
+  console.log("Billing errors:", billingResult);
+}
+if (!shippingResult.success) {
+  console.log("Shipping errors:", shippingResult);
+}
+
+// Extract payment info safely
+const paymentMethod = data.paymentMethod || "";
+const eMoneyNumber = data.payment?.eMoneyNumber || "";
+const eMoneyPin = data.payment?.eMoneyPin || "";
+
+// Pre-check
+if (!paymentMethod || (paymentMethod !== "eMoney" && paymentMethod !== "cod")) {
+  toast.error("Please select a payment method (eMoney or Cash)");
+  return false;
+}
+
+// Validate payment using schema
+const paymentPayload =
+  paymentMethod === "eMoney"
+    ? { paymentMethod, eMoneyNumber, eMoneyPin }
+    : { paymentMethod };
+
+const paymentResult = paymentSchema.safeParse(paymentPayload);
+
+if (!paymentResult.success) {
+  const missingFields = paymentResult.error.issues
+    .map((err) => err.message)
+    .join(", ");
+  toast.error(`Payment error: ${missingFields}`);
+  return false;
+}
+
+ 
 
   console.log("All data valid:", {
     ...billingResult.data,
     ...shippingResult.data,
     ...paymentResult.data,
   });
+  console.log("Billing validation:", billingResult.success, billingResult.error);
+console.log("Shipping validation:", shippingResult.success, shippingResult.error);
 
   return true;
 };
 const handlePaymentClick = () => {
   const data = getValues();
-  console.log("Raw form data:", data); // For debugging
+  console.log("Raw form data:", JSON.stringify(data, null, 2)); 
 
   const isValid = validateCheckout(data);
-
   if (!isValid) return;
-const mappedMethod = data.payment?.method;
+
+  // Correctly map payment info
+  const mappedMethod = data.paymentMethod; // root-level
+  const eMoneyNumber = data.payment?.eMoneyNumber || "";
+  const eMoneyPin = data.payment?.eMoneyPin || "";
+
   console.log("Mapped payment method:", mappedMethod);
-
-  // Optionally, check eMoney details
-  console.log("eMoney Number:", data.payment?.eMoneyNumber);
-  console.log("eMoney Pin:", data.payment?.eMoneyPin);
-
+  console.log("eMoney Number:", eMoneyNumber);
+  console.log("eMoney Pin:", eMoneyPin);
 
   // Update state
   setCheckoutData((prev) => ({
@@ -198,70 +177,26 @@ const mappedMethod = data.payment?.method;
       name: data.name || "",
       email: data.email || "",
       phone: String(data.phone || ""),
-      address: data.address || "",
-      zip: data.zip || "",
-      city: data.city || "",
-      country: data.country || "",
     },
     shipping: {
       ...prev.shipping,
+      address: data.address || "",
       zip: data.zip || "",
       city: data.city || "",
       country: data.country || "",
     },
     payment: {
       method: mappedMethod,
-      eMoneyNumber: data.payment?.eMoneyNumber || "",
-      eMoneyPin: data.payment?.eMoneyPin || "",
+      eMoneyNumber,
+      eMoneyPin,
       phoneNumber: data.payment?.phoneNumber || "",
     },
   }));
 
-  // Proceed to next page
   // router.push("/confirmation");
 };
 
-// ✅ Triggered when user clicks "Continue & Pay" (updated)
-// const handlePaymentClick = () => {
-//   const data = getValues();
-//   console.log("Raw form data:", data);  // For debugging
 
-//   const isValid = validateCheckout(data);
-
-//   if (isValid) {
-//     // Map payment method to match your PaymentData interface
-//     const mappedMethod = data.paymentMethod === "e-money" ? "eMoney" : data.paymentMethod === "cash" ? "cash" : "";
-
-//     setCheckoutData((prev) => ({
-//       ...prev,
-//       billing: {
-//         ...prev.billing,
-//         name: data.name || "",
-//         email: data.email || "",
-//         phone: String(data.phone || ""),  // Ensure string
-//         address: data.address || "",
-//         zip: data.zip || "",
-//         city: data.city || "",
-//         country: data.country || "",
-//       },
-//       shipping: {
-//         ...prev.shipping,
-//         zip: data.zip || "",
-//         city: data.city || "",
-//         country: data.country || "",
-//       },
-//       payment: {
-//         method: mappedMethod,
-//         eMoneyNumber: data.eMoneyNumber || "",
-//         eMoneyPin: data.eMoneyPin || "",
-//         phoneNumber: "",  // If not used, leave empty
-//       },
-//     }));
-
-//     // Navigate or handle next step
-//     // router.push("/confirmation");
-//   }
-// };
   return (
     <div style={{padding: `2rem ${paddingValue}`}}>
       <p

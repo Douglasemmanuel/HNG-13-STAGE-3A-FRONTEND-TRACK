@@ -330,6 +330,7 @@ interface RadioInputProps {
   name: string;
   value: string;
   checked?: boolean;
+  register: any;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   width?: number;
   height?: number;
@@ -343,6 +344,7 @@ const RadioInput: React.FC<RadioInputProps> = ({
   value,
   checked = false,
   onChange,
+  register,
   width = 250,
   height = 56,
   top = 0,
@@ -374,7 +376,11 @@ const RadioInput: React.FC<RadioInputProps> = ({
         name={name}
         value={value}
         checked={checked}
-        onChange={onChange}
+         {...register(name)}
+      onChange={(e) => {
+        register(name).onChange(e); // ✅ update RHF form
+        onChange?.(e); // ✅ update local state
+      }}
         style={{
           width: "16px",
           height: "16px",
@@ -528,12 +534,13 @@ const PaymentDetails: React.FC<PaymentDetailsProps> = ({
   label="e-Money"
   name="paymentMethod"
   value="eMoney"
+  register={register}
   checked={checkoutData.payment.method === "eMoney"}
-  onChange={()=>handleRadioChange('eMoney')}
-  // onChange={() => setCheckoutData(prev => ({
-  //   ...prev,
-  //   payment: { ...prev.payment, method: "eMoney" }
-  // }))}
+  // onChange={()=>handleRadioChange('eMoney')}
+  onChange={() => setCheckoutData(prev => ({
+    ...prev,
+    payment: { ...prev.payment, method: "eMoney" }
+  }))}
 />
 
 <RadioInput
@@ -541,11 +548,12 @@ const PaymentDetails: React.FC<PaymentDetailsProps> = ({
   name="paymentMethod"
   value="cod"
   checked={checkoutData.payment.method === "cod"}
-  onChange={()=>handleRadioChange('cod')}
-  // onChange={() => setCheckoutData(prev => ({
-  //   ...prev,
-  //   payment: { ...prev.payment, method: "cod" }
-  // }))}
+  register={register}
+  // onChange={()=>handleRadioChange('cod')}
+  onChange={() => setCheckoutData(prev => ({
+    ...prev,
+    payment: { ...prev.payment, method: "cod" }
+  }))}
 />
 
 
@@ -554,22 +562,9 @@ const PaymentDetails: React.FC<PaymentDetailsProps> = ({
     </div>
     {checkoutData.payment.method === 'eMoney' && (
         <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem', flexDirection: isDesktop ? 'row' : 'column' }}>
-         <PaymentInput
-      label="e-Money Number"
-      value={checkoutData.payment.eMoneyNumber}
-      onChange={(val) => setCheckoutData(prev => ({
-        ...prev,
-        payment: { ...prev.payment, eMoneyNumber: val }
-      }))}
-    />
-    <PaymentInput
-      label="e-Money PIN"
-      value={checkoutData.payment.eMoneyPin}
-      onChange={(val) => setCheckoutData(prev => ({
-        ...prev,
-        payment: { ...prev.payment, eMoneyPin: val }
-      }))}
-    />
+          {paymentInputs.map((input) => (
+            <PaymentInput key={input.name} {...input} />
+          ))}
         </div>
       )}
     </>
@@ -617,7 +612,7 @@ const PaymentInput: React.FC<PaymentInputProps> = ({
       type="text"
       placeholder={placeholder}
       {...(register && name ? register(name, { required: `${label} is required` }) : {})}
-      defaultValue={value || ""}
+      defaultValue={value || ""} // <-- change value to defaultValue
       onChange={(e) => onChange && onChange(e.target.value)}
       style={{
         width: `${width}px`,
