@@ -5,7 +5,7 @@ export function generateOrderEmailHtml(order: any, to: string, userName: string)
     .map(
       (item: any) => `
       <tr>
-        <td><img src="https://audiophilewebsite-psi.vercel.app/images/${item.image}" width="50" /></td>
+        <td><img src="https://audiophilewebsite-psi.vercel.app/assets/${item.image}" width="50" /></td>
         <td>${item.name}</td>
         <td>${item.quantity}</td>
         <td>$${item.price}</td>
