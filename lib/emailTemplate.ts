@@ -29,7 +29,7 @@ export function generateOrderEmailHtml(order: any, to: string, userName: string)
               <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
                 <tr>
                   <td align="center" style="padding-bottom: 20px;">
-                    <img src="https://audiophilewebsite-psi.vercel.app/assets/logo.png" alt="Audiophile Logo" width="120" style="display:block;" />
+                    <img src="https://audiophilewebsite-psi.vercel.app/assets/audiologo.png" alt="Audiophile Logo" width="120" style="display:block;" />
                   </td>
                 </tr>
 
