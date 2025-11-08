@@ -25,26 +25,6 @@ const CheckoutScreen:React.FC = () => {
       const paddingValue = isDesktop ? '13rem' : isTablet ? '5rem' : '2rem';
      const createOrder = useMutation(api.mutations.createOrder) ;
       const [open, setOpen] = useState(false)
-  //     const cartRef = useRef<HTMLDivElement>(null);
-
-
-  // useEffect(() => {
-  //   if (!open) return; 
-
-  //   const handleClickOutside = (event: MouseEvent) => {
-  //     if (cartRef.current && !cartRef.current.contains(event.target as Node)) {
-  //       setTimeout(() => clearCart(), 1000); // Clear cart after 1 second
-  //       setOpen(false); // Close cart
-  //       router.push("/"); // Redirect to home
-  //     }
-  //   };
-
-  //   document.addEventListener("mousedown", handleClickOutside);
-
-  //   return () => {
-  //     document.removeEventListener("mousedown", handleClickOutside);
-  //   };
-  // }, [open, clearCart, setOpen, router]);
 
   const handleOpenModal = () => setOpen(true);
   const handlePayed = () => {
@@ -331,7 +311,7 @@ const handlePaymentClick =  async() => {
         />
         <ProductSummary  onPayClick={handlePaymentClick} />
       </div>
-       {/* <div ref={cartRef}> */}
+     
        <SuccessModal isOpen={open} onClose={handleCloseModal}>
     <div style={{padding:"0.4rem 1rem"}}>
        <div
@@ -558,7 +538,7 @@ $ 5,446
       
     </div>
  </SuccessModal>
- {/* </div> */}
+
       </div>
   )
 }
