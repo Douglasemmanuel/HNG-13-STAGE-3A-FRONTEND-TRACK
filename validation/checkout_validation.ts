@@ -27,29 +27,6 @@ export const shippingSchema = z.object({
 
 
 
-// export const paymentSchema = z.object({
-//   paymentMethod: z.enum(["eMoney", "cod"]),
-//   eMoneyNumber: z.string().optional(),
-//   eMoneyPin: z.string().optional(),
-// }).superRefine((data, ctx) => {
-//   if (data.paymentMethod === "eMoney") {
-//     if (!data.eMoneyNumber) {
-//       ctx.addIssue({
-//         path: ["eMoneyNumber"],
-//         message: "eMoney Number is required for eMoney payment",
-//         code: "custom", // ✅ use string literal instead of ZodIssueCode.custom
-//       });
-//     }
-//     if (!data.eMoneyPin) {
-//       ctx.addIssue({
-//         path: ["eMoneyPin"],
-//         message: "eMoney PIN is required for eMoney payment",
-//         code: "custom", // ✅ string literal
-//       });
-//     }
-//   }
-// });
-
 
 export const paymentSchema = z
   .object({

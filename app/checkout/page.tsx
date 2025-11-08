@@ -8,13 +8,29 @@ import useResponsive from '@/hooks/useResponsive';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {  toast } from "react-toastify";
+import {useMutation , useQuery} from 'convex/react' ;
+import {api} from '../../convex/_generated/api' ;
 import { useState } from "react";
+import { useCartStore } from "@/store/cart_store";
 import { shippingSchema , billingSchema ,paymentSchema, checkoutSchema } from '../../validation/checkout_validation'
+import Image from "next/image";
+import ProductButton from "@/components/ProductButton";
+import SuccessModal from '../../components/SuccessModal';
+import logo from '../../public/assets/logo.svg';
 const CheckoutScreen:React.FC = () => {
+  
     const { isMobile, isTablet, isDesktop } = useResponsive();
+       const { cart, increaseQuantity, decreaseQuantity, removeFromCart  , subtotal , shipping , vat , grandTotal} = useCartStore();
     const router = useRouter()
       const paddingValue = isDesktop ? '13rem' : isTablet ? '5rem' : '2rem';
-
+     const createOrder = useMutation(api.mutations.createOrder) ;
+      const [open, setOpen] = useState(false)
+           const handleOpenModal = () => setOpen(true);
+              const handlePayed = () => {
+  handleCloseModal()      
+  router.push('/'); 
+};
+  const handleCloseModal = () => setOpen(false);
 interface BillingData {
   name: string;
   email: string;
@@ -53,14 +69,14 @@ interface CheckoutData {
       country: "",
     },
     payment: {
-      method: "", // or "cash"
+      method: "", 
       eMoneyNumber: "",
       eMoneyPin: "",
       phoneNumber: "",
     },
   });
 
-  // ✅ React Hook Form setup
+
   const {
     register,
     handleSubmit,
@@ -70,20 +86,16 @@ interface CheckoutData {
     mode: "onBlur",
   });
 
-  // ✅ Handle submit
   const onSubmit = (data: any) => {
     console.log("Checkout data:", data);
     router.push("/confirmation");
   };
 
 
-
-// ✅ Validation logic (updated)
 const validateCheckout = (data: any) => {
-  // Ensure phone is a string
-  // const phoneValue = String(data.phone || "");
+ 
 
-  // Validate billing
+ 
   const billingResult = billingSchema.safeParse({
     name: data.name || "",
     email: data.email || "",
@@ -153,7 +165,34 @@ console.log("Shipping validation:", shippingResult.success, shippingResult.error
 
   return true;
 };
-const handlePaymentClick = () => {
+const sendOrderConfirmationEmail = async (email: string) => {
+  try {
+    const emailRes = await fetch("/api/send_email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        to: email,
+        subject: "Order Confirmation",
+        text: "Order Successful", // blank message as requested
+      }),
+    });
+
+    const emailData = await emailRes.json();
+
+    if (emailData.success) {
+      toast.success("Confirmation email sent!");
+      return true;
+    } else {
+      toast.error("Failed to send confirmation email: " + emailData.error);
+      return false;
+    }
+  } catch (err: any) {
+    console.error(err);
+    toast.error("An error occurred: " + err.message);
+    return false;
+  }
+};
+const handlePaymentClick =  async() => {
   const data = getValues();
   console.log("Raw form data:", JSON.stringify(data, null, 2)); 
 
@@ -192,6 +231,56 @@ const handlePaymentClick = () => {
       phoneNumber: data.payment?.phoneNumber || "",
     },
   }));
+  // Map cart items to the shape expected by the backend (including productId).
+  // Try to use item.productId if available, otherwise fall back to item.id.
+  const mappedItems = (cart || []).map((item: any) => ({
+    name: item.name,
+    quantity: item.quantity,
+    price: item.price,
+    productId: item.productId ?? item.id,
+    image:item.image,
+  }));
+
+  const orderPayload = {
+    customer: {
+      name: data.name,
+      email: data.email,
+      phone: String(data.phone),
+    },
+    shipping: {
+      address: data.address,
+      city: data.city,
+      zip: data.zip,
+      country: data.country,
+    },
+    items: mappedItems,
+    totals:  {
+      subtotal: subtotal,
+      shipping: shipping,
+      tax: vat,
+      grandTotal: grandTotal,
+    },
+    status: String(mappedMethod),
+  };
+//   try {
+//     // Cast to any to satisfy the mutation's expected type if necessary.
+//     const orderResult = await createOrder({
+//   customer: { name: data.name, email: data.email, phone: String(data.phone) },
+//   shipping: { address: data.address, city: data.city, zip: data.zip, country: data.country },
+//   items: mappedItems, // ✅ 
+//   totals: { subtotal: subtotal, shipping: shipping, tax: vat, grandTotal: grandTotal },
+//   status: mappedMethod ,
+// });
+
+//     console.log("Order created:", orderResult);
+
+//     // router.push("/confirmation");
+//   } catch (err) {
+//     console.error("Failed to create order:", err);
+//     toast.error("Failed to create order. Please try again.");
+//   }
+   await sendOrderConfirmationEmail(data.email);
+   setOpen(true);
 
   // router.push("/confirmation");
 };
@@ -231,8 +320,234 @@ const handlePaymentClick = () => {
           checkoutData={checkoutData}
           setCheckoutData={setCheckoutData}
         />
-        <ProductSummary  onPayClick={handlePaymentClick}/>
+        <ProductSummary  onPayClick={handlePaymentClick} />
       </div>
+       <SuccessModal isOpen={open} onClose={handleCloseModal}>
+    <div style={{padding:"1rem"}}>
+       <div
+    style={{
+      width: '64px',
+      height: '64px',
+       position: 'relative',
+    }}
+  >
+    <Image
+      src={logo}
+      alt="Logo"
+      fill
+     style={{ objectFit: 'contain' }}
+    />
+  </div>
+      <p
+  style={{
+    fontFamily: "Manrope",
+    fontWeight: 700,
+    fontSize: "32px",
+    lineHeight: "36px",
+    letterSpacing: "1.14px",
+    textTransform: "uppercase",
+     paddingTop:'0.5rem',
+  }}
+>
+  THANK YOU <br/>FOR YOUR ORDER
+</p>
+
+    <p
+  style={{
+    fontFamily: "Manrope",
+    fontWeight: 400,
+    fontSize: "15px",
+    lineHeight: "25px",
+    paddingTop:'0.5rem',
+   
+  }}
+>
+ You will receive an email confirmation shortly.
+</p>
+<div style={{display:"flex" , flexDirection:"row" , justifyContent:"space-between" , marginTop:"1rem" , flexWrap:"wrap" , gap:isMobile? '1rem' :'0rem'}}>
+  <div
+style={{
+  color: 'black',
+    paddingTop: '0.5rem',
+    width: '314px',
+    // height: '140px',
+    top: '299px',
+    left: '294px',
+    transform: 'rotate(0deg)',
+    opacity: 1,
+    borderTopRightRadius: '8px',
+    borderBottomRightRadius: '8px',
+    background:"#F1F1F1",
+}}
+>
+<div style={{display:"flex" , flexDirection:"column" , padding:'1rem'}}>
+    <div style={{display:'flow' , flexDirection:'column' }}>
+           {cart.map((item) => (
+            <div
+              key={item.id}
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
+              {/* Left: Image and Info */}
+              <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+                {/* Image */}
+                <div
+                  style={{
+                    width: '64px',
+                    height: '64px',
+                    transform: 'rotate(0deg)',
+                    background: '#F1F1F1',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <div style={{ position: 'relative', width: '50px', height: '50px' }}>
+                    <Image
+                      src={item?.image.replace('./assets', '/assets')} 
+                      alt={`${item.name}-image`}
+                      fill
+                      style={{ objectFit: 'contain' }}
+                    />
+                  </div>
+                </div>
+    
+                {/* Name & Price */}
+                <div>
+                  <p
+                    style={{
+                      fontFamily: 'Manrope, sans-serif',
+                      fontWeight: 700,
+                      fontSize: '15px',
+                      lineHeight: '25px',
+                      letterSpacing: '0px',
+                    }}
+                  >
+                    {item.name}
+                  </p>
+                  <p
+                    style={{
+                      fontFamily: 'Manrope, sans-serif',
+                      fontWeight: 700,
+                      fontSize: '14px',
+                      lineHeight: '25px',
+                      letterSpacing: '0px',
+                      // paddingTop:'0.3rem',
+                    }}
+                  >
+                    ${item.price}
+                  </p>
+                </div>
+              </div>
+    
+            <p
+  style={{
+    fontFamily: "Manrope",
+    fontWeight: 700,
+    fontSize: "15px",
+    lineHeight: "25px",
+    letterSpacing: "0px",
+    textAlign: "right",
+  }}
+>
+  x{item.quantity}
+</p>
+
+            </div>
+          ))}
+    
+        </div>
+ <div
+  style={{
+    borderTop: '1px solid black', 
+    opacity: 0.2,                
+    width: '100%',                 
+    margin: '10px 0'              
+  }}
+></div>
+<p
+  style={{
+    fontFamily: 'Manrope',
+    fontWeight: 700,
+    fontSize: '12px',
+    lineHeight: '100%',
+    letterSpacing: '-0.21px',
+    textAlign:'center' , 
+  }}
+>
+ and {cart.length -1} other item(s)
+</p>
+</div>
+</div>
+<div
+style={{
+  color: 'black',
+    paddingTop: '0.5rem',
+    width:  isDesktop ?'168px' : '100%',
+    height:  isDesktop ? '140px' : '100px',
+    top: '299px',
+    left: '294px',
+    transform: 'rotate(0deg)',
+    opacity: 1,
+    borderTopRightRadius: '8px',
+    borderBottomRightRadius: '8px',
+    background:"black",
+    marginTop: isDesktop ? '0rem' :'0.3rem'
+}}
+>
+<div style={{display:"flex" , flexDirection:"column" , alignItems:"center" , justifyContent:"center" , }}>
+ <p
+  style={{
+    fontFamily: "Manrope",
+    fontWeight: 400,
+    fontSize: "15px",
+    lineHeight: "25px",
+    paddingTop:'0.5rem',
+    color:"white",
+      //  textAlign:"center",
+   
+  }}
+>
+GRAND TOTAL
+</p>
+<p
+  style={{
+    fontFamily: "Manrope",
+    fontWeight: 700,
+    fontSize: "18px",
+    lineHeight: "25px",
+    paddingTop:'0.5rem',
+    color:"white",
+      textTransform: "uppercase",
+      // textAlign:"center",
+   
+  }}
+>
+$ 5,446
+</p>
+</div>
+</div>
+
+</div>
+   <ProductButton
+      text="BACK TO HOME"
+      bgColor="#D87D4A"
+      textColor="white"
+      hoverBgColor="#FBAF85"
+      hoverTextColor="white"
+      width= '100%'
+      height='48px'
+      onClick={handlePayed}
+     
+    />
+      
+      
+    </div>
+ </SuccessModal>
       </div>
   )
 }
