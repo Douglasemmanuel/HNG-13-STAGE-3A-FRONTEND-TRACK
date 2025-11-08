@@ -38,10 +38,10 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose, children }) => {
   style={{
     width: isDesktop ? '581px' : isTablet ? '400px' : '300px',
     // height: isDesktop ? '540px' : isTablet ? '560px' : '700px',
-    top: isDesktop ? '10px' : isTablet ? '10px' : '4px', // brings modal lower
+    top: isDesktop ? '10px' : isTablet ? '10px' : '10px', // brings modal lower
   }}
 >
-  <div className="p-6">
+  <div className="p-3">
     {children}
   </div>
 </div>

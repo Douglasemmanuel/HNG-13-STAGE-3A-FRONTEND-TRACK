@@ -14,13 +14,11 @@ export default defineSchema({
   }),
 
   cartItems: defineTable({
-    id: v.string(), 
-    productId: v.id("products"),
+    productId: v.string(),
     quantity: v.number(),
   }),
 
   orders: defineTable({
-    id: v.string(), 
     customer: v.object({
       name: v.string(),
       email: v.string(),
@@ -34,7 +32,6 @@ export default defineSchema({
     }),
     items: v.array(
       v.object({
-        productId: v.id("products"),
         name: v.string(),
         price: v.number(),
         quantity: v.number(),

@@ -17,21 +17,7 @@ const ProductSummary:React.FC<ProductSummaryProps> = ({ onPayClick }) => {
    const router = useRouter();
    const { cart, increaseQuantity, decreaseQuantity, removeFromCart , subtotal , grandTotal , shipping , vat } = useCartStore();
   const { isMobile, isTablet, isDesktop } = useResponsive();
-  //  const [open, setOpen] = useState(false)
-  //     const handleOpenModal = () => setOpen(true);
-  // const handleCloseModal = () => setOpen(false);
-//    const handlePayed = () => {
-//   handleCloseModal()      
-//   router.push('/'); 
-// };
-// const handleContinuePay = () => {
-//   onPayClick();
-//     // if (onPayClick) {
-//     //   onPayClick(); // Run validation & form submission logic from CheckoutScreen
-//     // } else {
-//     //   handleOpenModal(); // Fallback (in case no function passed)
-//     // }
-//   };
+  
  
   return (
     <div

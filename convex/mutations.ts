@@ -27,14 +27,14 @@ export const addToCart = mutation({
     }
 
     return await ctx.db.insert("cartItems", {
-      id: args.productId,
       productId: args.productId,
       quantity: args.quantity
     });
   },
 });
 
-// Create order
+
+// Create order mutation
 export const createOrder = mutation({
   args: {
     customer: v.object({
@@ -50,11 +50,10 @@ export const createOrder = mutation({
     }),
     items: v.array(
       v.object({
-        productId: v.id("products"),
         name: v.string(),
         price: v.number(),
         quantity: v.number(),
-        image:v.string(),
+        image: v.string(),
       })
     ),
     totals: v.object({
@@ -66,9 +65,8 @@ export const createOrder = mutation({
     status: v.string(),
   },
   handler: async (ctx, args) => {
-    const id = `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-    return await ctx.db.insert("orders", {
-      id,
+    // Insert the order into the orders table
+    const order = await ctx.db.insert("orders", {
       customer: args.customer,
       shipping: args.shipping,
       items: args.items,
@@ -76,5 +74,7 @@ export const createOrder = mutation({
       status: args.status,
       createdAt: Date.now(),
     });
+
+    return order; // order._id contains the auto-generated ID
   },
 });

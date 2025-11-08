@@ -10,7 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {  toast } from "react-toastify";
 import {useMutation , useQuery} from 'convex/react' ;
 import {api} from '../../convex/_generated/api' ;
-import { useState } from "react";
+import { useState , useRef , useEffect } from "react";
 import { useCartStore } from "@/store/cart_store";
 import { shippingSchema , billingSchema ,paymentSchema, checkoutSchema } from '../../validation/checkout_validation'
 import Image from "next/image";
@@ -20,14 +20,36 @@ import logo from '../../public/assets/logo.svg';
 const CheckoutScreen:React.FC = () => {
   
     const { isMobile, isTablet, isDesktop } = useResponsive();
-       const { cart, increaseQuantity, decreaseQuantity, removeFromCart  , subtotal , shipping , vat , grandTotal} = useCartStore();
+       const { cart, increaseQuantity, decreaseQuantity, removeFromCart  , subtotal , shipping , vat , grandTotal , clearCart} = useCartStore();
     const router = useRouter()
       const paddingValue = isDesktop ? '13rem' : isTablet ? '5rem' : '2rem';
      const createOrder = useMutation(api.mutations.createOrder) ;
       const [open, setOpen] = useState(false)
-           const handleOpenModal = () => setOpen(true);
-              const handlePayed = () => {
-  handleCloseModal()      
+      const cartRef = useRef<HTMLDivElement>(null);
+
+
+  useEffect(() => {
+    if (!open) return; 
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (cartRef.current && !cartRef.current.contains(event.target as Node)) {
+        setTimeout(() => clearCart(), 1000); // Clear cart after 1 second
+        setOpen(false); // Close cart
+        router.push("/"); // Redirect to home
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [open, clearCart, setOpen, router]);
+
+  const handleOpenModal = () => setOpen(true);
+  const handlePayed = () => {
+  handleCloseModal()  
+   setTimeout(() => clearCart(), 1000);    
   router.push('/'); 
 };
   const handleCloseModal = () => setOpen(false);
@@ -172,10 +194,20 @@ const sendOrderConfirmationEmail = async (email: string) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         to: email,
-        subject: "Order Confirmation",
-        text: "Order Successful", // blank message as requested
+        subject: "Order Confirmation ",
+        text: "Order Successful", 
+        cart,
+      subtotal,
+      shipping,
+      vat,
+      grandTotal,
       }),
     });
+    if (!emailRes.ok) {
+  const text = await emailRes.text();
+  console.log("API Error:", text); 
+  return;
+}
 
     const emailData = await emailRes.json();
 
@@ -231,58 +263,33 @@ const handlePaymentClick =  async() => {
       phoneNumber: data.payment?.phoneNumber || "",
     },
   }));
-  // Map cart items to the shape expected by the backend (including productId).
-  // Try to use item.productId if available, otherwise fall back to item.id.
+
   const mappedItems = (cart || []).map((item: any) => ({
     name: item.name,
     quantity: item.quantity,
     price: item.price,
-    productId: item.productId ?? item.id,
     image:item.image,
   }));
 
-  const orderPayload = {
-    customer: {
-      name: data.name,
-      email: data.email,
-      phone: String(data.phone),
-    },
-    shipping: {
-      address: data.address,
-      city: data.city,
-      zip: data.zip,
-      country: data.country,
-    },
-    items: mappedItems,
-    totals:  {
-      subtotal: subtotal,
-      shipping: shipping,
-      tax: vat,
-      grandTotal: grandTotal,
-    },
-    status: String(mappedMethod),
-  };
-//   try {
-//     // Cast to any to satisfy the mutation's expected type if necessary.
-//     const orderResult = await createOrder({
-//   customer: { name: data.name, email: data.email, phone: String(data.phone) },
-//   shipping: { address: data.address, city: data.city, zip: data.zip, country: data.country },
-//   items: mappedItems, // ✅ 
-//   totals: { subtotal: subtotal, shipping: shipping, tax: vat, grandTotal: grandTotal },
-//   status: mappedMethod ,
-// });
 
-//     console.log("Order created:", orderResult);
+  try {
 
-//     // router.push("/confirmation");
-//   } catch (err) {
-//     console.error("Failed to create order:", err);
-//     toast.error("Failed to create order. Please try again.");
-//   }
+   const orderResult = await createOrder({
+  customer: { name: data.name, email: data.email, phone: String(data.phone) },
+  shipping: { address: data.address, city: data.city, zip: data.zip, country: data.country },
+  items: mappedItems, 
+  totals: { subtotal, shipping, tax: vat, grandTotal },
+  status: String(mappedMethod),
+});
+
+    console.log("Order created:", orderResult);
+  } catch (err) {
+    console.error("Failed to create order:", err);
+    toast.error("Failed to create order. Please try again.");
+  }
    await sendOrderConfirmationEmail(data.email);
    setOpen(true);
 
-  // router.push("/confirmation");
 };
 
 
@@ -322,8 +329,9 @@ const handlePaymentClick =  async() => {
         />
         <ProductSummary  onPayClick={handlePaymentClick} />
       </div>
+       <div ref={cartRef}>
        <SuccessModal isOpen={open} onClose={handleCloseModal}>
-    <div style={{padding:"1rem"}}>
+    <div style={{padding:"0.4rem 1rem"}}>
        <div
     style={{
       width: '64px',
@@ -346,7 +354,7 @@ const handlePaymentClick =  async() => {
     lineHeight: "36px",
     letterSpacing: "1.14px",
     textTransform: "uppercase",
-     paddingTop:'0.5rem',
+    //  paddingTop:'0.5rem',
   }}
 >
   THANK YOU <br/>FOR YOUR ORDER
@@ -548,6 +556,7 @@ $ 5,446
       
     </div>
  </SuccessModal>
+ </div>
       </div>
   )
 }

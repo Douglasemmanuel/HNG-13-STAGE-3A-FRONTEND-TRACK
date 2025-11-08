@@ -1,12 +1,12 @@
 import nodemailer from "nodemailer";
 import { NextRequest, NextResponse } from "next/server";
-import { getEmailTemplate } from "@/lib/emailTemplate";
+import { generateOrderEmailHtml } from "@/lib/emailTemplate";
 import { useCartStore } from "@/store/cart_store";
 
-const { cart, subtotal, vat, shipping, grandTotal } = useCartStore.getState();
+// const { cart, subtotal, vat, shipping, grandTotal } = useCartStore.getState();
 export async function POST(req: NextRequest) {
   try {
-    const { to, subject, text } = await req.json();
+    const { to, subject, text , subtotal , cart , shipping , vat , grandTotal } = await req.json();
 
     if (!to || !subject || !text) {
       return NextResponse.json(
@@ -14,14 +14,19 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-const htmlContent = getEmailTemplate(to, {
-  cart,
-  subtotal,
-  vat,
-  shipping,
-  grandTotal
-});
-
+const htmlContent = generateOrderEmailHtml(
+  {
+    customer: { name: to },
+    items: cart, 
+    totals: {
+      subtotal,
+      shipping,
+      tax: vat,
+      grandTotal: grandTotal,
+    },
+  },
+  to
+);
 
 
     const transporter = nodemailer.createTransport({
